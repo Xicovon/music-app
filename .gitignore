@@ -1,0 +1,8 @@
+node_modules/*
+api.json
+documents/*
+package-lock.json
+music/*
+ffmpeg.exe
+ffprobe.exe
+credentials.txt
