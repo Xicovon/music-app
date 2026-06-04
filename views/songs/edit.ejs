@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('partials/head'); %>
+  </head>
+  <body class="container">
+    <header>
+      <%- include('partials/header'); %>
+    </header>
+
+    <main>
+      <center>
+        <div class="p-5 mb-4 bg-light rounded-3">
+          <table>
+            <tr>
+              <td><label for="input-filename">Filename</label></td>
+              <td><input type="text" id="input-filename" size="30" value="<%= song.filename %>" disabled></td>
+            </tr>
+            <tr>
+              <td><label for="input-title">Title</label></td>
+              <td><input type="text" id="input-title" size="30" value="<%= song.title %>"></td>
+            </tr>
+            <tr>
+              <td><label for="input-artist">Artist</label></td>
+              <td><input type="text" id="input-artist" size="30" value="<%= song.artist %>"></td>
+            </tr>
+            <tr>
+              <td><label for="input-album">Album</label></td>
+              <td><input type="text" id="input-album" size="30" value="<%= song.album %>"></td>
+            </tr>
+            <tr>
+              <td><label for="input-year">Year</label></td>
+              <td><input type="text" id="input-year" size="30" value="<%= song.year %>"></td>
+            </tr>
+          </table>
+          <br>
+          <center><button id="submit_button" class="btn btn-primary">Submit</button></center>
+        </div>
+      </center>
+    </main>
+    
+    <footer>
+      <%- include('partials/footer'); %>
+    </footer>
+  </body>
+  <script src="metadata_helper.js"></script>
+</html>

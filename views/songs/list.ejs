@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('partials/head'); %>
+  </head>
+  <style>
+    table, th, td {
+      border: 1px solid black !important;
+    }
+    th, td {
+      padding: 15px;
+      text-align: center;
+    }
+    thead tr:nth-child(odd) {background-color: #c1c1c1;}
+    tbody tr:nth-child(even) {background-color: #c1c1c1;}
+  </style>
+  <body class="container">
+    <header>
+      <%- include('partials/header'); %>
+    </header>
+
+    <main>
+      <div class="p-5 mb-4 bg-light rounded-3">
+        <table>
+          <thead>
+            <tr>
+              <th>Filename</th>
+              <th>Title</th>
+              <th>Artist</th>
+              <th>Album</th>
+              <th>Year</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% songs.forEach(function(song) { %>
+              <tr>
+                <td><%= song.filename %></td>
+                <td><%= song.title %></td>
+                <td><%= song.artist %></td>
+                <td><%= song.album %></td>
+                <td><%= song.year %></td>
+                <td><a href="/songs/edit?filename=<%= song.filename %>">Edit</a></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </main>
+    
+    <footer>
+      <%- include('partials/footer'); %>
+    </footer>
+  </body>
+</html>

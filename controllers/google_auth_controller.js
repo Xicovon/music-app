@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const { google } = require('googleapis');
 const oauth2Client = new google.auth.OAuth2(
-  fs.readFileSync(credentials.txt, 'utf-8')
+  fs.readFileSync('credentials.txt', 'utf-8')
 );
 
 var credentials = null;

@@ -18,6 +18,8 @@
     "ejs": "^5.0.2",
     "express": "^5.2.1",
     "googleapis": "^171.4.0",
+    "mp3tag.js": "^3.16.0",
+    "serve-favicon": "^2.5.1",
     "youtube-dl-exec": "^3.1.7"
   }
 }
