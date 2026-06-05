@@ -8,7 +8,7 @@
       border: 1px solid black !important;
     }
     th, td {
-      padding: 15px;
+      padding: 7px;
       text-align: center;
     }
     thead tr:nth-child(odd) {background-color: #c1c1c1;}
@@ -25,10 +25,18 @@
           <thead>
             <tr>
               <th>Filename</th>
-              <th>Title</th>
-              <th>Artist</th>
-              <th>Album</th>
-              <th>Year</th>
+              <th>Title <input type="checkbox" id="title-filter" name="title-filter">
+              <input type="text" size=16 id="title-filter-text" name="title-filter-text" value="<%= search_params.title_filter_query %>">
+              </th>
+              <th>Artist <input type="checkbox" id="artist-filter" name="artist-filter">
+              <input type="text" size=14 id="artist-filter-text" name="artist-filter-text" value="<%= search_params.artist_filter_query %>">
+              </th>
+              <th>Album <input type="checkbox" id="album-filter" name="album-filter">
+              <input type="text" size=10 id="album-filter-text" name="album-filter-text" value="<%= search_params.album_filter_query %>">
+              </th>
+              <th>Year <input type="checkbox" id="year-filter" name="year-filter">
+              <input type="text" size=6 id="year-filter-text" name="year-filter-text" value="<%= search_params.year_filter_query %>">
+              </th>
               <th></th>
             </tr>
           </thead>
@@ -47,9 +55,15 @@
         </table>
       </div>
     </main>
-    
     <footer>
       <%- include('partials/footer'); %>
     </footer>
+    <script src="list.js"></script>
+    <script>
+      title_input.checked = <%= search_params.title_filter_null %>;
+      artist_input.checked = <%= search_params.artist_filter_null %>;
+      album_input.checked = <%= search_params.album_filter_null %>;
+      year_input.checked = <%= search_params.year_filter_null %>;
+    </script>
   </body>
 </html>
