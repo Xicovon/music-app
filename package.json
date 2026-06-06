@@ -1,5 +1,5 @@
 {
-  "name": "schedule_app",
+  "name": "music_app",
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
@@ -9,8 +9,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
-    "docker:build": "docker build --target production --tag schedule-app .",
-    "docker:start": "docker compose up schedule-app",
+    "docker:build": "docker build --tag music-app .",
+    "docker:build:nocache": "docker build --no-cache --tag music-app .",
+    "docker:start": "docker compose up music-app",
     "docker:build:start": "npm run docker:build && npm run docker:start"
   },
   "dependencies": {

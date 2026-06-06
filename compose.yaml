@@ -1,0 +1,59 @@
+# ========================================
+# Docker Compose Configuration
+# Modern Node.js Todo Application
+# ========================================
+
+services:
+  # ========================================
+  # Production Service
+  # ========================================
+  music-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: music-app-prod
+    ports:
+      - '${PROD_PORT:-8080}:3000'
+    environment:
+      NODE_ENV: production
+      ALLOWED_ORIGINS: '${ALLOWED_ORIGINS:-https://yourdomain.com}'
+    volumes:
+      - ./:/app:rw
+      - ./api.json:/api.json:rw
+      - ./music:/music:rw
+      - ./ffmpeg.exe:/ffmpeg.exe:rw
+      - ./ffprobe.exe:/ffprobe.exe:rw
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: '${PROD_MEMORY_LIMIT:-1G}'
+          cpus: '${PROD_CPU_LIMIT:-1.0}'
+        reservations:
+          memory: '${PROD_MEMORY_RESERVATION:-256M}'
+          cpus: '${PROD_CPU_RESERVATION:-0.1}'
+    security_opt:
+      - no-new-privileges:true
+    read_only: false
+    tmpfs:
+      - /tmp
+    networks:
+      - music-app-network
+    profiles:
+      - prod
+
+# ========================================
+# Volume Configuration
+# ========================================
+volumes:
+  data:
+    name: music-app-data
+    driver: local
+
+# ========================================
+# Network Configuration
+# ========================================
+networks:
+  music-app-network:
+    name: music-app-network
+    driver: bridge

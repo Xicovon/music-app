@@ -29,7 +29,7 @@ const fs = require('node:fs');
 const { json } = require('node:stream/consumers');
 
 app.get('/', async function (req, res) {
-  res.render('home', {});
+  res.redirect('/download');
 });
 
 app.listen(3000 , function () {
