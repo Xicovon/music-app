@@ -43,18 +43,11 @@ ENV NODE_ENV=production \
     NODE_OPTIONS="--max-old-space-size=256 --no-warnings" \
     NPM_CONFIG_LOGLEVEL=silent
 
-# Copy production dependencies from deps stage
-# COPY --from=deps --chown=1000:985 /app/node_modules ./node_modules
-# COPY --from=deps --chown=1000:985 /app/package*.json ./
-# Copy built application from build stage
-# COPY --from=build --chown=1000:985 /dist ./dist
-# COPY --from=build --chown=1000:985 /app ./
-
 # Switch to non-root user for security
 USER 1000:985
 
 # Expose port
-EXPOSE 3000
+EXPOSE 3737
 
 # Start production server
 CMD ["npm", "run", "start"]

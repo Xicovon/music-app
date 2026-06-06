@@ -20,6 +20,8 @@ dist/
 *.log
 coverage/
 .eslintcache
+ffprobe.exe
+ffmpeg.exe
 
 # OS files
 .DS_Store
