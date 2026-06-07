@@ -1,5 +1,6 @@
 const youtubedl = require('youtube-dl-exec')
 var fs = require('fs');
+var path = require ('path');
 
 exports.download = function(req, res) {
     res.render('download');
@@ -37,7 +38,7 @@ async function download_song(url) {
 
 async function convert_to_mp3(path) {
     var execSync = require('child_process').execSync;
-    var path = __dirname + '/../music/' + path.substring(0, path.indexOf('.'));
+    var path = path.join(__dirname, '/../music/', path.substring(0, path.indexOf('.')));
 
     execSync('ffmpeg -i \"' + path + '.opus\" \"' + path + '.mp3\"', { encoding: 'utf-8' });
 

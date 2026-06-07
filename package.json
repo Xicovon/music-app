@@ -9,9 +9,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
-    "docker:build": "docker build --tag xicovon/music-app .",
+    "docker:build:generic": "docker build --tag xicovon/music-app .",
     "docker:build:nocache": "docker build --no-cache --tag xicovon/music-app .",
-    "docker:build:arm": "docker build --platform linux/arm64 --tag xicovon/music-app .",
+    "docker:build": "docker build --platform linux/arm64 --tag xicovon/music-app .",
+    "docker:build:push": "npm run docker:build && npm run docker:push",
     "docker:start": "docker compose up music-app",
     "docker:build:start": "npm run docker:build && npm run docker:start",
     "docker:push": "docker push xicovon/music-app"

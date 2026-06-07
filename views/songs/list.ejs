@@ -48,7 +48,7 @@
                 <td><%= song.artist %></td>
                 <td><%= song.album %></td>
                 <td><%= song.year %></td>
-                <td><a href="/songs/edit?filename=<%= song.filename %>">Edit</a></td>
+                <td><a href="/songs/edit?filename=<%= song.parentPath + '\\' + song.filename %>">Edit</a></td>
               </tr>
             <% }); %>
           </tbody>

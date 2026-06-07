@@ -1,5 +1,7 @@
 var fs = require('fs');
 const MP3Tag = require('mp3tag.js');
+var path = require ('path');
+const music_path = path.join(__dirname, '../music/');
 
 exports.edit = function(req, res) {
     res.render('edit', {song: get_metadata(req.query.filename)});
@@ -16,7 +18,7 @@ exports.tag = function(req, res) {
 }
 
 exports.list = function(req, res) {
-    var files = fs.readdirSync(__dirname + '/../music/');
+    var files = search_directory(music_path);
 
     var title_filter_null   = (req.query.title_filter_null  === 'true') || false;
     var title_filter_query  = req.query.title_filter_query  || '';
@@ -38,60 +40,51 @@ exports.list = function(req, res) {
     };
 
     for (var i = 0; i < files.length; i++) {
-        var metadata = get_metadata(files[i]);
+        var metadata = get_metadata(path.join(files[i].parentPath, files[i].name));
         // filter the non empty values
         if (title_filter_null === true) {
-            console.log('the title_filter_null is ' + title_filter_null);
             if (metadata.title != '') {
-                console.log('title filter null');
                 files[i] = null;
                 continue;
             }
         }
         if (artist_filter_null === true) {
             if (metadata.artist != '') {
-                console.log('artist filter null');
                 files[i] = null;
                 continue;
             }
         }
         if (album_filter_null === true) {
             if (metadata.album != '') {
-                console.log('album filter null');
                 files[i] = null;
                 continue;
             }
         }
         if (year_filter_null === true) {
             if (metadata.year != '') {
-                console.log('year filter null');
                 files[i] = null;
                 continue;
             }
         }
         // filter search queries
         if (title_filter_query != '' && !metadata.title.toLowerCase().includes(title_filter_query.toLowerCase())) {
-            console.log('title filter query');
             files[i] = null;
             continue;
         }
         if (artist_filter_query != '' && !metadata.artist.toLowerCase().includes(artist_filter_query.toLowerCase())) {
-            console.log('artist filter query');
             files[i] = null;
             continue;
         }
         if (album_filter_query != '' && !metadata.album.toLowerCase().includes(album_filter_query.toLowerCase())) {
-            console.log('album filter query');
             files[i] = null;
             continue;
         }
         if (year_filter_query != '' && !metadata.year.toLowerCase().includes(year_filter_query.toLowerCase())) {
-            console.log('year filter query');
             files[i] = null;
             continue;
         }
 
-        files[i] = get_metadata(files[i]);
+        files[i] = get_metadata(path.join(files[i].parentPath, files[i].name));
     }
 
     files = files.filter(file => file !== null);
@@ -100,7 +93,7 @@ exports.list = function(req, res) {
 }
 
 function write_metadata(metadata) {
-    const buffer = fs.readFileSync(__dirname + '/../music/' + metadata.filename);
+    const buffer = fs.readFileSync(path.join(metadata.parentPath, metadata.filename));
     const mp3tag = new MP3Tag(buffer, true);
     mp3tag.read();
 
@@ -117,11 +110,11 @@ function write_metadata(metadata) {
     mp3tag.read()
 
     // Write the new buffer to file
-    fs.writeFileSync(__dirname + '/../music/' + metadata.filename, mp3tag.buffer)
+    fs.writeFileSync(path.join(metadata.parentPath, metadata.filename), mp3tag.buffer)
 }
 
-function get_metadata(file) {
-    const buffer = fs.readFileSync(__dirname + '/../music/' + file)
+function get_metadata(file_path) {
+    const buffer = fs.readFileSync(file_path);
     const mp3tag = new MP3Tag(buffer, true)
 
     mp3tag.read();
@@ -133,5 +126,11 @@ function get_metadata(file) {
 
     // Handle error if there's any
     if (mp3tag.error !== '') throw new Error(mp3tag.error)
-    else return { 'filename': file, 'title': title, 'artist': artist, 'album': album, 'year': year };
+    else return { 'filename': path.basename(file_path), 'parentPath': path.dirname(file_path), 'title': title, 'artist': artist, 'album': album, 'year': year };
+}
+
+function search_directory(dir) {
+    var files = fs.readdirSync(dir, { recursive: true, withFileTypes: true });
+    files = files.filter(file => file.isFile());
+    return files;
 }

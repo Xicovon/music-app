@@ -19,11 +19,6 @@ RUN npm install -g npm@latest
 # Copy package files
 COPY package*.json ./
 
-# Install production dependencies
-RUN --mount=type=cache,target=/root/.npm,sharing=locked \
-    npm ci --omit=dev && \
-    npm cache clean --force
-
 # Install all dependencies with build optimizations
 RUN --mount=type=cache,target=/root/.npm,sharing=locked \
     npm ci --no-audit --no-fund && \
