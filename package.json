@@ -8,22 +8,27 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
+    "start": "node --env-file=.env app.js",
     "docker:build:generic": "docker build --tag xicovon/music-app .",
     "docker:build:nocache": "docker build --no-cache --tag xicovon/music-app .",
     "docker:build": "docker build --platform linux/arm64 --tag xicovon/music-app .",
     "docker:build:push": "npm run docker:build && npm run docker:push",
     "docker:start": "docker compose up music-app",
     "docker:build:start": "npm run docker:build && npm run docker:start",
-    "docker:push": "docker push xicovon/music-app"
+    "docker:push": "docker push xicovon/music-app",
+    "db:start": "docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=DqaFaR2e23qA@ -e MYSQL_DATABASE=default_database -p 3306:3306 -v C:/users/bowen/documents/mysql:/var/lib/mysql -d mysql:latest"
   },
   "dependencies": {
     "@google-cloud/pubsub": "^5.3.0",
+    "@sequelize/mysql": "^7.0.0-alpha.48",
     "ejs": "^5.0.2",
     "express": "^5.2.1",
     "googleapis": "^171.4.0",
     "mp3tag.js": "^3.16.0",
+    "mysql2": "^3.22.5",
+    "pg": "^8.21.0",
     "serve-favicon": "^2.5.1",
+    "umzug": "^3.8.3",
     "youtube-dl-exec": "^3.1.7"
   }
 }

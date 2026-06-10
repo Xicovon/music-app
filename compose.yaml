@@ -1,28 +1,34 @@
-# ========================================
-# Docker Compose Configuration
-# Modern Node.js Todo Application
-# ========================================
-
 services:
-  # ========================================
-  # Production Service
-  # ========================================
-  music-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: music-app-prod
+  db:
+    image: postgres:latest
+    restart: always
     ports:
-      - '${PROD_PORT:-8080}:3000'
+      - 5432:5432
+    environment:
+      POSTGRES_USER: xicovon # The PostgreSQL user (useful to connect to the database)
+      POSTGRES_PASSWORD: DqaFaR2e23qA@ # The PostgreSQL password (useful to connect to the database)
+      POSTGRES_DB: default_database # The PostgreSQL default database (automatically created at first launch)
+    volumes:
+      # In this example, we share the folder `db-data` in our root repository, with the default PostgreSQL data path.
+      # It means that every time the repository is modifying the data inside
+      # of `/var/lib/postgresql/data/`, automatically the change will appear in `db-data`.
+      # You don't need to create the `db-data` folder. Docker Compose will do it for you.
+      - /media/musicapp/db-data/:/var/lib/postgresql/data/
+    
+  music-app:
+    image: xicovon/music-app:latest
+    container_name: music-app
+    ports:
+      - '${PROD_PORT:-3737}:3737'
+    depends_on:
+      - db
     environment:
       NODE_ENV: production
-      ALLOWED_ORIGINS: '${ALLOWED_ORIGINS:-https://yourdomain.com}'
+      ALLOWED_ORIGINS: '${ALLOWED_ORIGINS:-https://xicovon.xyz}'
     volumes:
-      - ./:/app:rw
-      - ./api.json:/api.json:rw
-      - ./music:/music:rw
-      - ./ffmpeg.exe:/ffmpeg.exe:rw
-      - ./ffprobe.exe:/ffprobe.exe:rw
+      - /media/music:/app/music:rw
+      - /media/musicapp/ffmpeg.exe:/app/ffmpeg.exe:rw
+      - /media/musicapp/ffprobe.exe:/app/ffprobe.exe:rw
     restart: unless-stopped
     deploy:
       resources:
@@ -38,22 +44,9 @@ services:
     tmpfs:
       - /tmp
     networks:
-      - music-app-network
-    profiles:
-      - prod
+      - cloudflared_tunnel-net
 
-# ========================================
-# Volume Configuration
-# ========================================
-volumes:
-  data:
-    name: music-app-data
-    driver: local
-
-# ========================================
-# Network Configuration
-# ========================================
 networks:
-  music-app-network:
-    name: music-app-network
+  cloudflared_tunnel-net:
     driver: bridge
+    external: true

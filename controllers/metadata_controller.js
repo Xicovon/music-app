@@ -2,24 +2,65 @@ var fs = require('fs');
 const MP3Tag = require('mp3tag.js');
 var path = require ('path');
 const music_path = path.join(__dirname, '../music/');
+var File = require('../models/files').File;
 
 exports.edit = function(req, res) {
     res.render('edit', {song: get_metadata(req.query.filename)});
 }
 
-exports.tag = function(req, res) {
+exports.tag = async function(req, res) {
     const filename = req.query.filename;
+    const parentPath = req.query.parentPath;
     const title = req.query.title;
     const artist = req.query.artist;
     const album = req.query.album;
     const year = req.query.year;
-    write_metadata({filename: filename, title: title, artist: artist, album: album, year: year});
+
+    var f = await File.findOne({where: { name: path.basename(filename)} });
+    f.title = title;
+    f.artist = artist;
+    f.album = album;
+    f.year = year;
+    f.save();
+
+    write_metadata({filename: filename, parentPath: parentPath, title: title, artist: artist, album: album, year: year});
     res.redirect('/songs/list');
 }
 
-exports.list = function(req, res) {
+exports.update_files = async function(req, res) {
+    // check each file on disk
+    // search db for file
+    // if file not in db create
     var files = search_directory(music_path);
 
+    console.log(files);
+
+    files.forEach((f) => {
+        console.log('searching db for file: ' + f.name);
+        create_file(path.join(f.parentPath, f.name));
+    })
+}
+
+async function create_file(file_name){
+    const [file, created] = await File.findOrCreate({
+        where: { name: path.basename(file_name) },
+        defaults: {
+            path: file_name,
+            fileType: path.extname(file_name)
+        },
+    });
+    if (created) {
+        console.log('file was created: ' + file_name);
+        const metadata = get_metadata(file.path);
+        file.title = metadata.title;
+        file.artist = metadata.artist;
+        file.album = metadata.album;
+        file.year = metadata.year;
+        file.save();
+    }
+}
+
+exports.list = async function(req, res) {
     var title_filter_null   = (req.query.title_filter_null  === 'true') || false;
     var title_filter_query  = req.query.title_filter_query  || '';
     var artist_filter_null  = (req.query.artist_filter_null === 'true') || false;
@@ -39,8 +80,12 @@ exports.list = function(req, res) {
         year_filter_query: year_filter_query
     };
 
+    //var files = search_directory(music_path);
+    var files = await File.findAll();
+
+    /*
     for (var i = 0; i < files.length; i++) {
-        var metadata = get_metadata(path.join(files[i].parentPath, files[i].name));
+        var metadata = get_metadata(files[i].path);
         // filter the non empty values
         if (title_filter_null === true) {
             if (metadata.title != '') {
@@ -85,9 +130,9 @@ exports.list = function(req, res) {
         }
 
         files[i] = get_metadata(path.join(files[i].parentPath, files[i].name));
-    }
+    }*/
 
-    files = files.filter(file => file !== null);
+    //files = files.filter(file => file !== null);
     
     res.render('list', {songs: files, search_params: search_params_json});
 }

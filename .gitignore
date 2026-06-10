@@ -6,3 +6,5 @@ music/*
 ffmpeg.exe
 ffprobe.exe
 credentials.txt
+db/migrations.json
+.env
