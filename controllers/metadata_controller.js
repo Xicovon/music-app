@@ -3,6 +3,8 @@ const MP3Tag = require('mp3tag.js');
 var path = require ('path');
 const music_path = path.join(__dirname, '../music/');
 var File = require('../models/files').File;
+const { Op } = require('@sequelize/core');
+const db = require('../db');
 
 exports.edit = function(req, res) {
     res.render('edit', {song: get_metadata(req.query.filename)});
@@ -21,7 +23,7 @@ exports.tag = async function(req, res) {
     f.artist = artist;
     f.album = album;
     f.year = year;
-    f.save();
+    await f.save();
 
     write_metadata({filename: filename, parentPath: parentPath, title: title, artist: artist, album: album, year: year});
     res.redirect('/songs/list');
@@ -31,10 +33,15 @@ exports.update_files = async function(req, res) {
     // check each file on disk
     // search db for file
     // if file not in db create
+
+    // do not await
+    await search_files();
+
+    res.redirect('/songs/list');
+}
+
+async function search_files(search_path) {
     var files = search_directory(music_path);
-
-    console.log(files);
-
     files.forEach((f) => {
         console.log('searching db for file: ' + f.name);
         create_file(path.join(f.parentPath, f.name));
@@ -80,59 +87,31 @@ exports.list = async function(req, res) {
         year_filter_query: year_filter_query
     };
 
-    //var files = search_directory(music_path);
-    var files = await File.findAll();
+    var whereStatement = {};
+    if(title_filter_null) {
+        whereStatement.title = { [Op.or]: [{[Op.is]: null}, {[Op.eq]: ''}] };
+    }
+    if(artist_filter_null) {
+        whereStatement.artist = { [Op.or]: [{[Op.is]: null}, {[Op.eq]: ''}] };
+    }
+    if(album_filter_null) {
+        whereStatement.album = { [Op.or]: [{[Op.is]: null}, {[Op.eq]: ''}] };
+    }
+    if(year_filter_null) {
+        whereStatement.year = { [Op.or]: [{[Op.is]: null}, {[Op.eq]: ''}] };
+    }
 
-    /*
-    for (var i = 0; i < files.length; i++) {
-        var metadata = get_metadata(files[i].path);
-        // filter the non empty values
-        if (title_filter_null === true) {
-            if (metadata.title != '') {
-                files[i] = null;
-                continue;
-            }
+    var files = await File.findAll({
+        where: {
+            [Op.and]: [
+                whereStatement,
+                db.sequelize.where(db.sequelize.fn('lower', db.sequelize.col('title')), { [Op.substring]: '%' + title_filter_query + '%' }),
+                db.sequelize.where(db.sequelize.fn('lower', db.sequelize.col('artist')), { [Op.substring]: '%' + artist_filter_query + '%' }),
+                db.sequelize.where(db.sequelize.fn('lower', db.sequelize.col('album')), { [Op.substring]: '%' + album_filter_query + '%' }),
+                db.sequelize.where(db.sequelize.fn('lower', db.sequelize.col('year')), { [Op.substring]: '%' + year_filter_query + '%' }),
+            ],
         }
-        if (artist_filter_null === true) {
-            if (metadata.artist != '') {
-                files[i] = null;
-                continue;
-            }
-        }
-        if (album_filter_null === true) {
-            if (metadata.album != '') {
-                files[i] = null;
-                continue;
-            }
-        }
-        if (year_filter_null === true) {
-            if (metadata.year != '') {
-                files[i] = null;
-                continue;
-            }
-        }
-        // filter search queries
-        if (title_filter_query != '' && !metadata.title.toLowerCase().includes(title_filter_query.toLowerCase())) {
-            files[i] = null;
-            continue;
-        }
-        if (artist_filter_query != '' && !metadata.artist.toLowerCase().includes(artist_filter_query.toLowerCase())) {
-            files[i] = null;
-            continue;
-        }
-        if (album_filter_query != '' && !metadata.album.toLowerCase().includes(album_filter_query.toLowerCase())) {
-            files[i] = null;
-            continue;
-        }
-        if (year_filter_query != '' && !metadata.year.toLowerCase().includes(year_filter_query.toLowerCase())) {
-            files[i] = null;
-            continue;
-        }
-
-        files[i] = get_metadata(path.join(files[i].parentPath, files[i].name));
-    }*/
-
-    //files = files.filter(file => file !== null);
+    });
     
     res.render('list', {songs: files, search_params: search_params_json});
 }

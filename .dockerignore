@@ -1,6 +1,3 @@
-# Optimized .dockerignore for Node.js + React Todo App
-# Based on actual project structure
-
 # Version control
 .git/
 .github/

@@ -15,23 +15,23 @@
           <table>
             <tr>
               <td><label for="input-filename">Filename</label></td>
-              <td><input type="text" id="input-filename" size="30" value="<%= song.filename %>" disabled></td>
+              <td><input type="text" id="input-filename" size="50" value="<%= song.filename %>" disabled></td>
             </tr>
             <tr>
               <td><label for="input-title">Title</label></td>
-              <td><input type="text" id="input-title" size="30" value="<%= song.title %>"></td>
+              <td><input type="text" id="input-title" size="50" value="<%= song.title %>"></td>
             </tr>
             <tr>
               <td><label for="input-artist">Artist</label></td>
-              <td><input type="text" id="input-artist" size="30" value="<%= song.artist %>"></td>
+              <td><input type="text" id="input-artist" size="50" value="<%= song.artist %>"></td>
             </tr>
             <tr>
               <td><label for="input-album">Album</label></td>
-              <td><input type="text" id="input-album" size="30" value="<%= song.album %>"></td>
-            </tr>
-            <tr>
-              <td><label for="input-year">Year</label></td>
-              <td><input type="text" id="input-year" size="30" value="<%= song.year %>"></td>
+              <td>
+                <input type="text" id="input-album" size="37" value="<%= song.album %>">
+                <label for="input-year">Year</label>
+                <input type="text" id="input-year" size="6" value="<%= song.year %>">
+              </td>
             </tr>
           </table>
           <br>
