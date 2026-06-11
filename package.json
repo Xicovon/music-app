@@ -9,18 +9,19 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node --env-file=.env app.js",
+    "start:production": "node app.js",
     "docker:build:generic": "docker build --tag xicovon/music-app .",
     "docker:build:nocache": "docker build --no-cache --tag xicovon/music-app .",
     "docker:build": "docker build --platform linux/arm64 --tag xicovon/music-app .",
-    "docker:build:push": "npm run docker:build && npm run docker:push",
     "docker:start": "docker compose up music-app",
     "docker:build:start": "npm run docker:build && npm run docker:start",
-    "docker:push": "docker push xicovon/music-app",
+    "docker:push": "npm run docker:build && docker push xicovon/music-app",
     "db:start": "docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=DqaFaR2e23qA@ -e MYSQL_DATABASE=default_database -p 3306:3306 -v C:/users/bowen/documents/mysql:/var/lib/mysql -d mysql:latest"
   },
   "dependencies": {
     "@google-cloud/pubsub": "^5.3.0",
     "@sequelize/mysql": "^7.0.0-alpha.48",
+    "cors": "^2.8.6",
     "ejs": "^5.0.2",
     "express": "^5.2.1",
     "googleapis": "^171.4.0",

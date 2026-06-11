@@ -45,4 +45,4 @@ USER 1000:985
 EXPOSE 3737
 
 # Start production server
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start:production"]
