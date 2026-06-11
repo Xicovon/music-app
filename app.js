@@ -5,6 +5,11 @@ app.set('view engine', 'ejs');
 var path = require ('path');
 app.set('views', [path.join(__dirname, 'views'), path.join(__dirname, 'views/songs/')]);
 
+// CONFIGURE CORS
+var cors = require('cors');
+// Adds headers: Access-Control-Allow-Origin: *
+app.use(cors());
+
 app.use(express.static(__dirname + '/public'));
 
 var favicon = require('serve-favicon');
