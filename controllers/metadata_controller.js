@@ -43,6 +43,9 @@ exports.update_files = async function(req, res) {
 async function search_files(search_path) {
     var files = search_directory(music_path);
     files.forEach((f) => {
+        if (path.extname(path.join(f.parentPath, f.name)) == '.jpg' || path.extname(path.join(f.parentPath, f.name)) == '.png' || path.extname(path.join(f.parentPath, f.name)) == '.jpeg') {
+            return;
+        }
         console.log('searching db for file: ' + f.name);
         create_file(path.join(f.parentPath, f.name));
     })
@@ -57,13 +60,14 @@ async function create_file(file_name){
         },
     });
     if (created) {
-        console.log('file was created: ' + file_name);
+        console.log('db record was created for: ' + file_name);
         const metadata = get_metadata(file.path);
         file.title = metadata.title;
         file.artist = metadata.artist;
         file.album = metadata.album;
         file.year = metadata.year;
-        file.save();
+        await file.save();
+        console.log('db record was updated for: ' + file_name);
     }
 }
 
@@ -87,31 +91,38 @@ exports.list = async function(req, res) {
         year_filter_query: year_filter_query
     };
 
-    var whereStatement = {};
-    if(title_filter_null) {
-        whereStatement.title = { [Op.or]: [{[Op.is]: null}, {[Op.eq]: ''}] };
+    var whereStatement = '';
+    if (title_filter_null) {
+        whereStatement += '(title IS NULL OR title = \'\') AND '
     }
-    if(artist_filter_null) {
-        whereStatement.artist = { [Op.or]: [{[Op.is]: null}, {[Op.eq]: ''}] };
+    if (artist_filter_null) {
+        whereStatement += '(artist IS NULL OR artist = \'\') AND '
     }
-    if(album_filter_null) {
-        whereStatement.album = { [Op.or]: [{[Op.is]: null}, {[Op.eq]: ''}] };
+    if (album_filter_null) {
+        whereStatement += '(album IS NULL OR album = \'\') AND '
     }
-    if(year_filter_null) {
-        whereStatement.year = { [Op.or]: [{[Op.is]: null}, {[Op.eq]: ''}] };
+    if (year_filter_null) {
+        whereStatement += '(year IS NULL OR year = \'\') AND '
+    }
+    if (title_filter_query != '') {
+        whereStatement += 'LOWER(title) LIKE \'%' + title_filter_query + '%\' AND '
+    }
+    if (artist_filter_query != '') {
+        whereStatement += 'LOWER(artist) LIKE \'%' + artist_filter_query + '%\' AND '
+    }
+    if (album_filter_query != '') {
+        whereStatement += 'LOWER(album) LIKE \'%' + album_filter_query + '%\' AND '
+    }
+    if (year_filter_query != '') {
+        whereStatement += 'LOWER(year) LIKE \'%' + year_filter_query + '%\' AND '
     }
 
-    var files = await File.findAll({
-        where: {
-            [Op.and]: [
-                whereStatement,
-                db.sequelize.where(db.sequelize.fn('lower', db.sequelize.col('title')), { [Op.substring]: '%' + title_filter_query + '%' }),
-                db.sequelize.where(db.sequelize.fn('lower', db.sequelize.col('artist')), { [Op.substring]: '%' + artist_filter_query + '%' }),
-                db.sequelize.where(db.sequelize.fn('lower', db.sequelize.col('album')), { [Op.substring]: '%' + album_filter_query + '%' }),
-                db.sequelize.where(db.sequelize.fn('lower', db.sequelize.col('year')), { [Op.substring]: '%' + year_filter_query + '%' }),
-            ],
-        }
+    // Callee is the model definition. This allows you to easily map a query to a predefined model
+    const files = await db.sequelize.query('SELECT * FROM files WHERE ' + whereStatement + 'TRUE', {
+        model: File,
+        mapToModel: true, // pass true here if you have any mapped fields
     });
+    // Each element of `files` is now an instance of File
     
     res.render('list', {songs: files, search_params: search_params_json});
 }

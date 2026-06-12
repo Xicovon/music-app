@@ -9,6 +9,13 @@ const sequelize = new Sequelize({
     password: process.env.MYSQL_PASSWORD,
     host: process.env.MYSQL_HOST,
     port: parseInt(process.env.MYSQL_PORT || '3306'),
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 30000,
+    },
+    logging: console.log,
 });
 
 
