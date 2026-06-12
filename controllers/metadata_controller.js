@@ -42,13 +42,14 @@ exports.update_files = async function(req, res) {
 
 async function search_files(search_path) {
     var files = search_directory(music_path);
-    files.forEach((f) => {
+    for (const f of files) {
         if (path.extname(path.join(f.parentPath, f.name)) == '.jpg' || path.extname(path.join(f.parentPath, f.name)) == '.png' || path.extname(path.join(f.parentPath, f.name)) == '.jpeg') {
-            return;
+            continue;
         }
         console.log('searching db for file: ' + f.name);
-        create_file(path.join(f.parentPath, f.name));
-    })
+        await create_file(path.join(f.parentPath, f.name));
+    }
+    console.log('Finished updating all files');
 }
 
 async function create_file(file_name){
