@@ -11,7 +11,8 @@ RUN chown -R 1000:985 /app
 # install node
 RUN apt-get install -yq curl
 RUN curl -sL https://deb.nodesource.com/setup_26.x | bash
-RUN apt-get install -yq nodejs build-essential python3 python3-pip
+RUN apt-get install -yq nodejs build-essential python3 python3-pip nano
+RUN apt-get install -yq ffmpeg
 
 # install npm
 RUN npm install -g npm@latest
@@ -24,14 +25,8 @@ RUN --mount=type=cache,target=/root/.npm,sharing=locked \
     npm ci --no-audit --no-fund && \
     npm cache clean --force
 
-# Create necessary directories and set permissions
-RUN mkdir -p /app/node_modules/.vite
-
 # Copy source code
 COPY --chown=1000:985 . .
-
-# Create non-root user for security
-RUN chown -R 1000:985 /app
 
 # Set optimized environment variables
 ENV NODE_ENV=production \

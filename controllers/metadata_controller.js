@@ -5,6 +5,8 @@ const music_path = path.join(__dirname, '../music/');
 var File = require('../models/files').File;
 const { Op } = require('@sequelize/core');
 const db = require('../db');
+const { promisify } = require('util');
+const exec = promisify(require('child_process').exec)
 
 exports.edit = function(req, res) {
     res.render('edit', {song: get_metadata(req.query.filename)});
@@ -43,13 +45,27 @@ exports.update_files = async function(req, res) {
 async function search_files(search_path) {
     var files = search_directory(music_path);
     for (const f of files) {
-        if (path.extname(path.join(f.parentPath, f.name)) == '.jpg' || path.extname(path.join(f.parentPath, f.name)) == '.png' || path.extname(path.join(f.parentPath, f.name)) == '.jpeg') {
-            continue;
+        console.log('Checking: ' + path.join(f.parentPath, f.name));
+        if (path.extname(path.join(f.parentPath, f.name)) != '.mp3') {
+            if (path.extname(path.join(f.parentPath, f.name)) == '.jpg' || path.extname(path.join(f.parentPath, f.name)) == '.png' || path.extname(path.join(f.parentPath, f.name)) == '.jpeg') {
+                continue;
+            }
+            // Convert non mp3 files to mp3
+            f.name = await convert_to_mp3(path.join(f.parentPath, f.name));
         }
+
         console.log('searching db for file: ' + f.name);
         await create_file(path.join(f.parentPath, f.name));
     }
     console.log('Finished updating all files');
+}
+
+async function convert_to_mp3(filepath) {
+    console.log('Converting: ' + filepath + ' to mp3');
+    const base_path = path.join(path.dirname(filepath), path.basename(filepath, path.extname(filepath)));
+    const cmd_output = await exec('ffmpeg -i \"' + filepath + '\" \"' + base_path + '.mp3\"');
+    fs.unlinkSync(filepath);
+    return path.basename(base_path) + '.mp3';
 }
 
 async function create_file(file_name){

@@ -1,5 +1,17 @@
 const button = document.getElementById('submit_button');
 button.addEventListener('click', function(e) {
+  save();
+});
+
+textbox.addEventListener("keypress", logKey);
+
+function logKey(e) {
+    if (e.code === 'Enter') {
+        save();
+    }
+}
+
+function save() {
   const filename = document.getElementById('input-filename').value;
   const parentPath = document.getElementById('input-parentPath').value
   const title = document.getElementById('input-title').value;
@@ -10,4 +22,4 @@ button.addEventListener('click', function(e) {
   // Perform the metadata update logic here
   const url = `/songs/tag?filename=${encodeURIComponent(filename)}&parentPath=${encodeURIComponent(parentPath)}&title=${encodeURIComponent(title)}&artist=${encodeURIComponent(artist)}&album=${encodeURIComponent(album)}&year=${encodeURIComponent(year)}`;
   window.location.href = url;
-});
+}

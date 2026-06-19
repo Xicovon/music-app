@@ -37,7 +37,6 @@ app.get('/', async function (req, res) {
   res.redirect('/download');
 });
 
-
 var db = require('./db');
 app.listen(3737, async function () {
   console.log('listening on port 3737!');

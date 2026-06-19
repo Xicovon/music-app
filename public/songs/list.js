@@ -26,14 +26,14 @@ year_input.addEventListener('change', function(e) {
 
 function filter_list() {
   const url = `/songs/list?
-title_filter_null=${encodeURIComponent(title_input.checked)}
-&artist_filter_null=${encodeURIComponent(artist_input.checked)}
-&album_filter_null=${encodeURIComponent(album_input.checked)}
-&year_filter_null=${encodeURIComponent(year_input.checked)}
-&title_filter_query=${encodeURIComponent(title_input_text.value)}
-&artist_filter_query=${encodeURIComponent(artist_input_text.value)}
-&album_filter_query=${encodeURIComponent(album_input_text.value)}
-&year_filter_query=${encodeURIComponent(year_input_text.value)}`;
+    title_filter_null=${encodeURIComponent(title_input.checked)}
+    &artist_filter_null=${encodeURIComponent(artist_input.checked)}
+    &album_filter_null=${encodeURIComponent(album_input.checked)}
+    &year_filter_null=${encodeURIComponent(year_input.checked)}
+    &title_filter_query=${encodeURIComponent(title_input_text.value)}
+    &artist_filter_query=${encodeURIComponent(artist_input_text.value)}
+    &album_filter_query=${encodeURIComponent(album_input_text.value)}
+    &year_filter_query=${encodeURIComponent(year_input_text.value)}`;
   window.location.href = url;
 }
 

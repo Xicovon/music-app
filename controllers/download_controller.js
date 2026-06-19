@@ -10,10 +10,12 @@ exports.download = function(req, res) {
 
 exports.get_song = async function(req, res) {
     var download_url = decodeURIComponent(req.query.url);
-    download_url = download_url.substring(0, download_url.indexOf('&'));
+    if (download_url.indexOf('&') != -1) {
+        download_url = download_url.substring(0, download_url.indexOf('&'));
+    }
     var filepath = await download_song(download_url);
     await create_db_record(filepath);
-    res.redirect('/download');
+    res.redirect('/songs/list');
 }
 
 exports.tag = function(req, res) {
@@ -22,6 +24,7 @@ exports.tag = function(req, res) {
 
 async function download_song(url) {
     var console_output;
+    const ffmpeg_location = (process.env.NODE_ENV != 'production') ? path.join(__dirname, '../') : '/usr/bin/ffmpeg';
 
     await youtubedl(url, {
         extractAudio: true,
@@ -29,7 +32,7 @@ async function download_song(url) {
         paths: ['./music'],
         noWarnings: true,
         preferFreeFormats: true,
-        ffmpegLocation: './',
+        ffmpegLocation: ffmpeg_location,
         audioFormat: 'mp3',
         restrictFilenames: true,
     }).then(output => console_output = output)
@@ -43,6 +46,6 @@ async function download_song(url) {
 
 async function create_db_record(filename) {
     console.log('Creating db record for newly downloaded file: ' + filename);
-    const filepath = path.join(__dirname, '/music/', filename);
+    const filepath = path.join(__dirname, '../', 'music/', filename);
     const f = await File.create({ name: filename, path: filepath, fileType: path.extname(filename) });
 }

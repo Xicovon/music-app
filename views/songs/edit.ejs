@@ -11,11 +11,12 @@
     <main>
       <center>
         <div class="p-5 mb-4 bg-light rounded-3">
-          <input type="text" id="input-parentPath" size="30" value="<%= song.parentPath %>" disabled hidden>
+          <input type="text" id="input-filename" size="30" value="<%= song.filename %>" disabled hidden>
+          <input type="text" id="input-parentPath" size="50" value="<%= song.parentPath %>" disabled hidden>
           <table>
             <tr>
               <td><label for="input-filename">Filename</label></td>
-              <td><input type="text" id="input-filename" size="50" value="<%= song.filename %>" disabled></td>
+              <td><input type="text" size="50" value="<%= song.parentPath %>\<%= song.filename %>" disabled></td>
             </tr>
             <tr>
               <td><label for="input-title">Title</label></td>
@@ -28,9 +29,9 @@
             <tr>
               <td><label for="input-album">Album</label></td>
               <td>
-                <input type="text" id="input-album" size="37" value="<%= song.album %>">
+                <input type="text" id="input-album" size="35" value="<%= song.album %>">
                 <label for="input-year">Year</label>
-                <input type="text" id="input-year" size="6" value="<%= song.year %>">
+                <input type="text" id="input-year" size="8" value="<%= song.year %>">
               </td>
             </tr>
           </table>
